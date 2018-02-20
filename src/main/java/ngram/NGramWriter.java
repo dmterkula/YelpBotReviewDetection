@@ -2,6 +2,8 @@ package ngram;
 
 import com.opencsv.CSVReader;
 import file_handler.ReadTrainSetId;
+import org.mapdb.DB;
+import org.mapdb.DBMaker;
 import preprocess.StringProcessor;
 
 import java.io.*;
@@ -24,6 +26,16 @@ public class NGramWriter {
 
     private HashSet<String> testSet;
 
+    private DB dbF = DBMaker.newMemoryDB()
+            .transactionDisable()
+            .closeOnJvmShutdown()
+            .make();
+
+    private DB dbNF = DBMaker.newMemoryDB()
+            .transactionDisable()
+            .closeOnJvmShutdown()
+            .make();
+
     public NGramWriter(int nGramSize, String fileName, String outFileNameFiltered, String outFileNameNonFiltered, String testSet1,
                        String testSet2) {
         this.nGram = nGramSize;
@@ -32,8 +44,8 @@ public class NGramWriter {
         this.outFileNameNonFiltered = outFileNameNonFiltered;
         filteredReviewText = new ArrayList<>();
         nonFilteredReviewText = new ArrayList<>();
-        filteredNGramDictionary = new HashMap<>(10000000);
-        nonFilteredNGramDictionary = new HashMap<>(10000000);
+        filteredNGramDictionary = dbF.getHashMap("filtered");
+        nonFilteredNGramDictionary = dbNF.getHashMap("nonFiltered");
         testSet = new HashSet<>();
         readTestSet(testSet1, testSet2);
 
