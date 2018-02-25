@@ -7,7 +7,7 @@ import java.util.List;
 
 public class StringProcessor {
 
-    private static String commonWordsFile = "CommonWords.txt";
+    private static String commonWordsFile = "CommonWords1.txt";
     public StringProcessor(){
 
     }

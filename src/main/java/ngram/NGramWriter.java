@@ -10,9 +10,9 @@ import java.util.*;
 public class NGramWriter {
 
     private int nGram;
-    private static String location = "C:\\Users\\David\\Desktop\\Xavier\\2017-2018\\Spring Semester 2018\\Senior Project\\Data\\yelpResData\\";
+    private static String location = "C:\\Users\\David\\Desktop\\Xavier\\2017-2018\\Spring Semester 2018\\Senior Project\\Research\\Project\\src\\main\\resources\\";
     private String absPath;
-    private String fileName;
+
     private String outFileNameFiltered;
     private String outFileNameNonFiltered;
 
@@ -23,6 +23,9 @@ public class NGramWriter {
     private HashMap<String, Integer> nonFilteredNGramDictionary;
 
     private HashSet<String> testSet;
+
+    private int[] filteredFrequencyDistribution;
+    private int[] nonFilteredFrequencyDistribution;
 
     public NGramWriter(int nGramSize, String fileName, String outFileNameFiltered, String outFileNameNonFiltered, String testSet1,
                        String testSet2) {
@@ -37,6 +40,14 @@ public class NGramWriter {
         testSet = new HashSet<>();
         readTestSet(testSet1, testSet2);
 
+        filteredFrequencyDistribution = new int[501];
+        nonFilteredFrequencyDistribution = new int[501];
+
+        for(int i = 0; i < filteredFrequencyDistribution.length; i++){
+            filteredFrequencyDistribution[i] = 0;
+            nonFilteredFrequencyDistribution[i] = 0;
+        }
+
     }
 
     public void readTestSet(String testSet1, String testSet2) {
@@ -50,42 +61,28 @@ public class NGramWriter {
         CSVReader reader = new CSVReader(new FileReader(absPath));
         String[] row = null;
         int counter = 0;
-        while ((row = reader.readNext()) != null || counter <=10000) {
-            if (counter == 0) { // skip header
+        while ((row = reader.readNext()) != null) {
+            System.out.println(counter);
+            if (row.length == 10) { // it is a valid row, with review in a single cell and is formatted correctly
+                if (row[8].contains("N")) { // then this is not a filtered review
+                    nonFilteredReviewText.add(row[3]);
+                } else  { // then this is a filtered review
+                    filteredReviewText.add(row[3]);
+                }
                 counter++;
-            } else { // process as normal
-                if(counter % 10000 == 0){
-                    createFilteredNGramDictionary(filteredReviewText);
-                    createNonFilteredNGramDictionary(nonFilteredReviewText);
-                    filteredReviewText.removeAll(filteredReviewText);
-                    nonFilteredReviewText.removeAll(nonFilteredReviewText);
-
-                }
-                if (row.length == 10) { // it is a valid row, with review in a single cell and is formatted correctly
-                    String reviewId = row[1];
-                    if (!testSet.contains(reviewId)) { // if this review is not in either test set, then keep processing
-
-                        if (row[8].contains("N")) { // then this is not a filtered review
-                            nonFilteredReviewText.add(row[3]);
-                        } else if (row[8].contains("Y")) { // then this is a filtered review
-                            filteredReviewText.add(row[3]);
-                        }
-                        counter ++;
-                    }
-
-                }
-
-                System.out.println(counter);
             }
-
         }
+        reader.close();
 
+
+        createFilteredNGramDictionary(filteredReviewText);
+        //createNonFilteredNGramDictionary(nonFilteredReviewText);
         writeGramsToFile();
 
     }
 
     public void writeGramsToFile(){
-        //writeToFile(filteredNGramDictionary, outFileNameFiltered);
+        writeToFile(filteredNGramDictionary, outFileNameFiltered);
         //writeToFile(nonFilteredNGramDictionary, outFileNameNonFiltered);
     }
 
@@ -96,6 +93,7 @@ public class NGramWriter {
         int counter = 0;
         for(String review: textList) {
             System.out.println(counter);
+            System.out.println("Size: " + filteredNGramDictionary.size());
             counter ++;
             if (review.length() >= nGram) {
                 review = stringProcessor.process(review);
@@ -103,11 +101,11 @@ public class NGramWriter {
                 for (String gram : grams) {
                     if (!gram.isEmpty() && !gram.equals("")) { // if not left with empty string
                         if (filteredNGramDictionary.containsKey(gram)) {
-
                             filteredNGramDictionary.put(gram, filteredNGramDictionary.get(gram) + 1);
                         } else {
                             filteredNGramDictionary.put(gram, 1);
                         }
+
                     }
                 }
             }
@@ -170,4 +168,55 @@ public class NGramWriter {
         }
 
     }
+
+    public void assessModel(){
+
+        // non filtered
+        Iterator it = nonFilteredNGramDictionary.entrySet().iterator();
+        while (it.hasNext()){
+            Map.Entry pair = (Map.Entry)it.next();
+            int value = (int)pair.getValue();
+            if(value < nonFilteredFrequencyDistribution.length-1){
+                nonFilteredFrequencyDistribution[value] = nonFilteredFrequencyDistribution[value] + 1;
+            }
+            else{
+                nonFilteredFrequencyDistribution[nonFilteredFrequencyDistribution.length-1] = nonFilteredFrequencyDistribution[nonFilteredFrequencyDistribution.length-1] + 1;
+            }
+        }
+
+
+        Iterator itr = filteredNGramDictionary.entrySet().iterator();
+        while (itr.hasNext()){
+            Map.Entry pair = (Map.Entry)itr.next();
+            int value = (int)pair.getValue();
+            if(value < filteredFrequencyDistribution.length-1){
+                filteredFrequencyDistribution[value] = filteredFrequencyDistribution[value] + 1;
+            }
+            else{
+                filteredFrequencyDistribution[filteredFrequencyDistribution.length-1] = filteredFrequencyDistribution[filteredFrequencyDistribution.length-1] + 1;
+            }
+        }
+
+    }
+
+    public void printTables(){
+
+        System.out.println("Non Filtered n gram distribution, n = " + nGram);
+        System.out.println("------------------------------------------------");
+        for(int i = 0; i < nonFilteredFrequencyDistribution.length; i++){
+            System.out.println(i + ":    " +  nonFilteredFrequencyDistribution[i]);
+        }
+        System.out.println();
+        System.out.println();
+
+        System.out.println("Filtered n gram distribution, n = " + nGram);
+        System.out.println("------------------------------------------------");
+        for(int i = 0; i < filteredFrequencyDistribution.length; i++){
+            System.out.println(i + ":    " +  filteredFrequencyDistribution[i]);
+        }
+
+
+    }
+
+
 }

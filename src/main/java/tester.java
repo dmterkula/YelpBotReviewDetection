@@ -1,4 +1,5 @@
 import com.sun.org.apache.xpath.internal.SourceTree;
+import file_handler.RandomDataTrimmer;
 import file_handler.ReadCommonWords;
 import ngram.NGramCalculator;
 import ngram.NGramWriter;
@@ -25,14 +26,19 @@ public class tester {
         //System.out.println(ids.size());
 
 
-        NGramWriter nGramWriter = new NGramWriter(4, "filteredReviews.csv", "filteredGrams.txt",
+        NGramWriter nGramWriter = new NGramWriter(3, "trimmedTrainSetFiltered.csv", "filteredGrams.txt",
                 "nonFilteredGrams.txt", "Train Set Y.txt", "Train Set N.txt");
         nGramWriter.splitIntoNGram();
 
-        //1136009 with process
-        //1181485 without process
+      nGramWriter.assessModel();
+      nGramWriter.printTables();
 
 
+        //RandomDataTrimmer rdt =  new RandomDataTrimmer(860000, 50000, "filteredReviews.csv");
+        //rdt.readFile();
+        //rdt.selectRandomRows();
+        //rdt.writeTrimmedSetsToFile();
 
     }
+
 }
