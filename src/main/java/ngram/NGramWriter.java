@@ -50,11 +50,11 @@ public class NGramWriter {
         CSVReader reader = new CSVReader(new FileReader(absPath));
         String[] row = null;
         int counter = 0;
-        while ((row = reader.readNext()) != null || counter <=10000) {
+        while ((row = reader.readNext()) != null &&counter <= 50000 ) {
             if (counter == 0) { // skip header
                 counter++;
             } else { // process as normal
-                if(counter % 10000 == 0){
+                if(counter % 50000 == 0){
                     createFilteredNGramDictionary(filteredReviewText);
                     createNonFilteredNGramDictionary(nonFilteredReviewText);
                     filteredReviewText.removeAll(filteredReviewText);
@@ -79,14 +79,13 @@ public class NGramWriter {
             }
 
         }
-
-        writeGramsToFile();
+        //writeGramsToFile();
 
     }
 
     public void writeGramsToFile(){
-        //writeToFile(filteredNGramDictionary, outFileNameFiltered);
-        //writeToFile(nonFilteredNGramDictionary, outFileNameNonFiltered);
+        writeToFile(filteredNGramDictionary, outFileNameFiltered);
+        writeToFile(nonFilteredNGramDictionary, outFileNameNonFiltered);
     }
 
     private void createFilteredNGramDictionary(ArrayList<String> textList){
