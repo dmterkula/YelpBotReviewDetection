@@ -31,7 +31,7 @@ public class tester {
                 "nonFilteredGrams.txt", "Train Set Y.txt", "Train Set N.txt");
         nGramWriter.splitIntoNGram();
 
-      nGramWriter.assessModel();
+      nGramWriter.assessModel(nGramWriter.getNonFilteredNGramDictionary(), nGramWriter.getFilteredNGramDictionary());
       nGramWriter.printTables();
 
 

@@ -43,10 +43,6 @@ public class NGramWriter {
         filteredFrequencyDistribution = new int[501];
         nonFilteredFrequencyDistribution = new int[501];
 
-        for(int i = 0; i < filteredFrequencyDistribution.length; i++){
-            filteredFrequencyDistribution[i] = 0;
-            nonFilteredFrequencyDistribution[i] = 0;
-        }
 
     }
 
@@ -154,7 +150,7 @@ public class NGramWriter {
                 Map.Entry pair = (Map.Entry) it.next();
                 bw.write(pair.getKey() + " " + pair.getValue());
                 bw.newLine();
-                it.remove(); // avoids a ConcurrentModificationException
+                //it.remove(); // avoids a ConcurrentModificationException
             }
         } catch (IOException e) {
 
@@ -174,10 +170,15 @@ public class NGramWriter {
 
     }
 
-    public void assessModel(){
+    public void assessModel(HashMap<String, Integer> nfNGramDictionary,HashMap<String, Integer> fNGramDictionary){
+
+        for(int i = 0; i < filteredFrequencyDistribution.length; i++){
+            filteredFrequencyDistribution[i] = 0;
+            nonFilteredFrequencyDistribution[i] = 0;
+        }
 
         // non filtered
-        Iterator it = nonFilteredNGramDictionary.entrySet().iterator();
+        Iterator it = nfNGramDictionary.entrySet().iterator();
         while (it.hasNext()){
             Map.Entry pair = (Map.Entry)it.next();
             int value = (int)pair.getValue();
@@ -190,7 +191,7 @@ public class NGramWriter {
         }
 
 
-        Iterator itr = filteredNGramDictionary.entrySet().iterator();
+        Iterator itr = fNGramDictionary.entrySet().iterator();
         while (itr.hasNext()){
             Map.Entry pair = (Map.Entry)itr.next();
             int value = (int)pair.getValue();
@@ -219,9 +220,15 @@ public class NGramWriter {
         for(int i = 0; i < filteredFrequencyDistribution.length; i++){
             System.out.println(i + ":    " +  filteredFrequencyDistribution[i]);
         }
-
-
     }
 
+    public HashMap<String, Integer> getFilteredNGramDictionary() {
+        return filteredNGramDictionary;
+    }
+
+
+    public HashMap<String, Integer> getNonFilteredNGramDictionary() {
+        return nonFilteredNGramDictionary;
+    }
 
 }
