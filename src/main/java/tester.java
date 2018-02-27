@@ -10,7 +10,7 @@ import java.util.List;
 
 public class tester {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
         //ReviewReader reviewReader = new ReviewReader("3000-N-split1.csv");
         //reviewReader.readFile();
 
@@ -25,8 +25,9 @@ public class tester {
         //HashSet<String> ids = rts.getIds();
         //System.out.println(ids.size());
 
-
-        NGramWriter nGramWriter = new NGramWriter(3, "trimmedTrainSetFiltered.csv", "filteredGrams.txt",
+        int gramSize = 3;
+        NGramWriter nGramWriter = new NGramWriter(gramSize, "trimmedTrainSetFiltered.csv",
+                "filteredGrams" + gramSize + ".txt",
                 "nonFilteredGrams.txt", "Train Set Y.txt", "Train Set N.txt");
         nGramWriter.splitIntoNGram();
 

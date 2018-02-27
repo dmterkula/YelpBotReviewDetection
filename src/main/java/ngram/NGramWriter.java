@@ -57,7 +57,7 @@ public class NGramWriter {
         testSet.addAll(readTrainSetId1.getIds());
     }
 
-    public void splitIntoNGram() throws IOException {
+    public void splitIntoNGram() throws Exception {
         CSVReader reader = new CSVReader(new FileReader(absPath));
         String[] row = null;
         int counter = 0;
@@ -86,20 +86,22 @@ public class NGramWriter {
         //writeToFile(nonFilteredNGramDictionary, outFileNameNonFiltered);
     }
 
-    private void createFilteredNGramDictionary(ArrayList<String> textList){
+    private void createFilteredNGramDictionary(ArrayList<String> textList) throws Exception{
 
         StringProcessor stringProcessor = new StringProcessor();
-        NGramCalculator calculator = new NGramCalculator(nGram);
         int counter = 0;
         for(String review: textList) {
+            NGramCalculator calculator = new NGramCalculator(nGram);
             System.out.println(counter);
-            System.out.println("Size: " + filteredNGramDictionary.size());
+           // System.out.println("Size: " + filteredNGramDictionary.size());
+            //Thread.sleep(500);
             counter ++;
-            if (review.length() >= nGram) {
+            if (review.length() >= nGram) { // can make atleast 1 valid gram of nGram length
                 review = stringProcessor.process(review);
                 List<String> grams = calculator.calculateGrams(review);
                 for (String gram : grams) {
                     if (!gram.isEmpty() && !gram.equals("")) { // if not left with empty string
+                       // System.out.println(gram);
                         if (filteredNGramDictionary.containsKey(gram)) {
                             filteredNGramDictionary.put(gram, filteredNGramDictionary.get(gram) + 1);
                         } else {
@@ -109,6 +111,7 @@ public class NGramWriter {
                     }
                 }
             }
+            calculator = null;
         }
 
         System.out.println(filteredNGramDictionary.size() +  " f dictionary size");
@@ -118,11 +121,12 @@ public class NGramWriter {
         StringProcessor stringProcessor = new StringProcessor();
         int counter = 0;
         for(String review: textList) {
+            NGramCalculator calculator = new NGramCalculator(nGram);
             System.out.println(counter);
             counter ++;
             if (review.length() >= nGram) {
                 review = stringProcessor.process(review);
-                NGramCalculator calculator = new NGramCalculator(nGram);
+
                 List<String> grams = calculator.calculateGrams(review);
                 for (String gram : grams) {
 
@@ -133,6 +137,7 @@ public class NGramWriter {
                     }
 
                 }
+                calculator = null;
             }
         }
         System.out.println(nonFilteredNGramDictionary.size() +  " nf dictionary size");
